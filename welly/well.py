@@ -10,9 +10,6 @@ import re
 import datetime
 import warnings
 
-import matplotlib.pyplot as plt
-import matplotlib as mpl
-import matplotlib.ticker as ticker
 import lasio
 import numpy as np
 from io import StringIO
@@ -619,15 +616,15 @@ class Well(object):
             None. The plot is a side-effect.
         """
         # These will be treated differently.
-        plot_well(well=self,
-                  legend=legend,
-                  tracks=tracks,
-                  track_titles=track_titles,
-                  alias=alias,
-                  basis=basis,
-                  return_fig=return_fig,
-                  extents=extents,
-                  **kwargs)
+        return plot_well(well=self,
+                         legend=legend,
+                         tracks=tracks,
+                         track_titles=track_titles,
+                         alias=alias,
+                         basis=basis,
+                         return_fig=return_fig,
+                         extents=extents,
+                         **kwargs)
 
     def coverage(self, keys=None, alias=None):
         """
