@@ -18,6 +18,7 @@ from tqdm import tqdm
 from .well import Well, WellError
 from . import utils
 from .utils import deprecated
+from .plot import plot_kdes_project
 from .defaults import ALIAS  # For access by user.
 
 
@@ -415,34 +416,11 @@ class Project(object):
         Returns:
             None or figure.
         """
-        wells = self.find_wells_with_curve(mnemonic, alias=alias)
-        fig, axs = plt.subplots(len(self), 1, figsize=(10, 1.5*len(self)))
-
-        curves = [w.get_curve(mnemonic, alias=alias) for w in wells]
-        all_data = np.hstack(curves)
-        all_data = all_data[~np.isnan(all_data)]
-
-        # Find values for common axis to exclude outliers.
-        amax = np.percentile(all_data, 99)
-        amin = np.percentile(all_data,  1)
-
-        for i, w in enumerate(self):
-            c = w.get_curve(mnemonic, alias=alias)
-
-            if uwi_regex is not None:
-                label = re.sub(uwi_regex, r'\1', w.uwi)
-            else:
-                label = w.uwi
-
-            if c is not None:
-                axs[i] = c.plot_kde(ax=axs[i], amax=amax, amin=amin, label=label+'-'+str(c.mnemonic))
-            else:
-                continue
-
-        if return_fig:
-            return fig
-        else:
-            return
+        return plot_kdes_project(project=self,
+                                 mnemonic=mnemonic,
+                                 alias=alias,
+                                 uwi_regex=uwi_regex,
+                                 return_fig=return_fig)
 
     @deprecated('Project.find_wells_with_curve() is deprecated; use Project.filter_wells_by_data().')
     def find_wells_with_curve(self, mnemonic, alias=None):

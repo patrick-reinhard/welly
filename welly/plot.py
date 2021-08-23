@@ -1,3 +1,4 @@
+import re
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -479,3 +480,49 @@ def plot_kde_curve(curve,
         return fig
     else:
         return None
+
+
+def plot_kdes_project(project, mnemonic, alias=None, uwi_regex=None, return_fig=True):
+        """
+        Plot KDEs for all curves with the given name.
+
+        Args:
+            project (welly.project.Project): Project object
+            menmonic (str): the name of the curve to look for.
+            alias (dict): a welly alias dictionary.
+            uwi_regex (str): a regex pattern. Only this part of the UWI will be displayed
+                on the plot of KDEs.
+            return_fig (bool): whether to return the matplotlib figure object.
+
+        Returns:
+            None or figure.
+        """
+        wells = project.find_wells_with_curve(mnemonic, alias=alias)
+        fig, axs = plt.subplots(len(project), 1, figsize=(10, 1.5*len(project)))
+
+        curves = [w.get_curve(mnemonic, alias=alias) for w in wells]
+        all_data = np.hstack(curves)
+        all_data = all_data[~np.isnan(all_data)]
+
+        # Find values for common axis to exclude outliers.
+        amax = np.percentile(all_data, 99)
+        amin = np.percentile(all_data,  1)
+
+        for i, w in enumerate(project):
+            c = w.get_curve(mnemonic, alias=alias)
+
+            if uwi_regex is not None:
+                label = re.sub(uwi_regex, r'\1', w.uwi)
+            else:
+                label = w.uwi
+
+            if c is not None:
+                axs[i] = c.plot_kde(ax=axs[i], amax=amax, amin=amin, label=label+'-'+str(c.mnemonic))
+            else:
+                continue
+
+        if return_fig:
+            return fig
+        else:
+            return
+
