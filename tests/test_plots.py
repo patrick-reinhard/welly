@@ -12,13 +12,27 @@ https://pypi.python.org/pypi/pytest-mpl/0.3
 import pytest
 
 from welly import Well
+from welly import Project
 from welly import Synthetic
 
 params = {'tolerance': 20,
           'savefig_kwargs': {'dpi': 100},
           }
 
-FNAME = 'tests/P-129_out.LAS'
+FNAME = 'P-129_out.LAS'
+
+
+@pytest.mark.mpl_image_compare(**params)
+def test_project_kdes_plot():
+    """
+    Tests mpl image of curve.
+    """
+    project = Project.from_las(FNAME)
+    project += project
+
+    fig = project.plot_kdes(mnemonic='GR', return_fig=True)
+
+    return fig
 
 
 @pytest.mark.mpl_image_compare(**params)
