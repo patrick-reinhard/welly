@@ -1,7 +1,8 @@
+import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import matplotlib.ticker as ticker
-import numpy as np
+from matplotlib.patches import PathPatch
 
 from . import utils
 
@@ -229,6 +230,252 @@ def plot_well(well,
                 sp.set_color('gray')
 
     if return_fig:
+        return fig
+    else:
+        return None
+
+
+def plot_2d_curve(curve,
+                  ax=None,
+                  width=None,
+                  aspect=60,
+                  cmap=None,
+                  plot_curve=False,
+                  ticks=(1, 10),
+                  return_fig=True,
+                  **kwargs,
+                  ):
+    """
+    Plot a 2D curve.
+
+    Args:
+        curve (welly.curve.Curve): Curve object
+        ax (ax): A matplotlib axis.
+        width (int): The width of the image.
+        aspect (int): The aspect ratio (not quantitative at all).
+        cmap (str): The colourmap to use.
+        plot_curve (bool): Whether to plot the curve as well.
+        ticks (tuple): The tick interval on the y-axis.
+        return_fig (bool): whether to return the matplotlib figure.
+            Default False.
+
+    Returns:
+        ax. If you passed in an ax, otherwise None.
+    """
+    # Set up the figure.
+    if ax is None:
+        fig = plt.figure(figsize=(2, 10))
+        ax = fig.add_subplot(111)
+        return_ax = False
+    else:
+        return_ax = True
+
+    # Set up the data.
+    cmap = cmap or 'viridis'
+    default = int(curve.shape[0] / aspect)
+    if curve.ndim == 1:
+        a = np.expand_dims(curve, axis=1)
+        a = np.repeat(a, width or default, axis=1)
+    elif curve.ndim == 2:
+        a = curve[:, :width] if width < curve.shape[1] else curve
+    elif curve.ndim == 3:
+        if 2 < curve.shape[-1] < 5:
+            # Interpret as RGB or RGBA.
+            a = utils.normalize(np.copy(curve))
+            cmap = None  # Actually doesn't matter.
+        else:
+            # Take first slice.
+            a = curve[:, :width, 0] if width < curve.shape[1] else curve[..., 0]
+    else:
+        raise NotImplementedError("Can only handle up to 3 dimensions.")
+
+    # At this point, a is either a 2D array, or a 2D (rgb) array.
+    extent = [0, width or default, curve.stop, curve.start]
+    im = ax.imshow(a, cmap=cmap, extent=extent, aspect='auto')
+
+    if plot_curve:
+        paths = ax.fill_betweenx(curve.basis, curve, np.nanmin(curve),
+                                 facecolor='none',
+                                 **kwargs,
+                                 )
+
+        # Make the 'fill' mask and clip the background image with it.
+        patch = PathPatch(paths._paths[0], visible=False)
+        ax.add_artist(patch)
+        im.set_clip_path(patch)
+
+    ax.set_xticks([])
+
+    # Rely on interval order.
+    lower, upper = curve.stop, curve.start
+    rng = abs(upper - lower)
+
+    ax.set_ylim([lower, upper])
+
+    # Make sure ticks is a tuple.
+    try:
+        ticks = tuple(ticks)
+    except TypeError:
+        ticks = (1, ticks)
+
+    # Avoid MAXTICKS error.
+    while rng / ticks[0] > 250:
+        mi, ma = 10 * ticks[0], ticks[1]
+        if ma <= mi:
+            ma = 10 * mi
+        ticks = (mi, ma)
+
+    # Carry on plotting...
+    minorLocator = mpl.ticker.MultipleLocator(ticks[0])
+    ax.yaxis.set_minor_locator(minorLocator)
+
+    majorLocator = mpl.ticker.MultipleLocator(ticks[1])
+    majorFormatter = mpl.ticker.FormatStrFormatter('%d')
+    ax.yaxis.set_major_locator(majorLocator)
+    ax.yaxis.set_major_formatter(majorFormatter)
+
+    ax.yaxis.set_ticks_position('left')
+    ax.get_yaxis().set_tick_params(which='both', direction='out')
+
+    if return_ax:
+        return ax
+    elif return_fig:
+        plt.tight_layout()
+        return fig
+    else:
+        return None
+
+
+def plot_curve(curve, ax=None, legend=None, return_fig=False, alias=None, **kwargs):
+    """
+    Plot a curve.
+
+    Args:
+        curve (welly.curve.Curve): Curve object
+        ax (ax): A matplotlib axis.
+        legend (striplog.legend): A legend. Optional. Should contain kwargs for ax.set().
+        return_fig (bool): whether to return the matplotlib figure.
+            Default False.
+        kwargs: Arguments for ``ax.plot()``
+
+    Returns:
+        ax. If you passed in an ax, otherwise None.
+    """
+    if ax is None:
+        fig = plt.figure(figsize=(2, 10))
+        ax = fig.add_subplot(111)
+        return_ax = False
+    else:
+        return_ax = True
+
+    d = None
+
+    if legend is not None:
+        try:
+            d = legend.get_decor(curve)
+        except:
+            pass
+
+    if d is not None:
+        kwargs['color'] = d.colour
+        kwargs['lw'] = getattr(d, 'lineweight', None) or getattr(d, 'lw', 1)
+        kwargs['ls'] = getattr(d, 'linestyle', None) or getattr(d, 'ls', '-')
+
+    ax.plot(curve, curve.basis, **kwargs)
+
+    if d is not None:
+        # Attempt to get axis parameters from decor.
+        axkwargs = {}
+
+        xlim = getattr(d, 'xlim', None)
+        if xlim is not None:
+            axkwargs['xlim'] = list(map(float, xlim.split(',')))
+
+        xticks = getattr(d, 'xticks', None)
+        if xticks is not None:
+            axkwargs['xticks'] = list(map(float, xticks.split(',')))
+
+        xscale = getattr(d, 'xscale', None)
+        if xscale is not None:
+            axkwargs['xscale'] = xscale
+
+        ax.set(**axkwargs)
+
+    ax.set_title(curve.mnemonic)  # no longer needed
+    ax.set_xlabel(curve.units)
+
+    if False:  # labeltop of axes?
+        ax.xaxis.tick_top()
+
+    if True:  # rotate x-tick labels
+        labels = ax.get_xticklabels()
+        for label in labels:
+            label.set_rotation(90)
+
+    ax.set_ylim([curve.stop, curve.start])
+    ax.grid('on', color='k', alpha=0.33, lw=0.33, linestyle='-')
+
+    if return_ax:
+        return ax
+    elif return_fig:
+        return fig
+    else:
+        return None
+
+
+def plot_kde_curve(curve,
+                   ax=None,
+                   amax=None,
+                   amin=None,
+                   label=None,
+                   return_fig=True):
+    """
+    Plot a KDE for the curve. Very nice summary of KDEs:
+    https://jakevdp.github.io/blog/2013/12/01/kernel-density-estimation/
+
+    Args:
+        curve (welly.curve.Curve): Curve object
+        ax (axis): Optional matplotlib (MPL) axis to plot into. Returned.
+        amax (float): Optional max value to permit.
+        amin (float): Optional min value to permit.
+        label (string): What to put on the y-axis. Defaults to curve name.
+        return_fig (bool): If you want to return the MPL figure object.
+
+    Returns:
+        None, axis, figure: depending on what you ask for.
+    """
+    from scipy.stats import gaussian_kde
+
+    if ax is None:
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        return_ax = False
+    else:
+        return_ax = True
+
+    a = curve[~np.isnan(curve)]
+
+    # Find values for common axis to exclude outliers.
+    if amax is None:
+        amax = np.percentile(a, 99)
+    if amin is None:
+        amin = np.percentile(a, 1)
+
+    x = a[np.abs(a - 0.5 * (amax + amin)) < 0.5 * (amax - amin)]
+    x_grid = np.linspace(amin, amax, 100)
+
+    kde = gaussian_kde(x)
+    std_a = kde.evaluate(x_grid)
+
+    img = np.array([std_a]) / np.max([std_a])
+    extent = [amin, amax, 0, 1]
+    ax.imshow(img, aspect='auto', cmap='viridis', extent=extent)
+    ax.set_yticklabels([])
+    ax.set_ylabel(label or curve.mnemonic)
+
+    if return_ax:
+        return ax
+    elif return_fig:
         return fig
     else:
         return None
