@@ -19,6 +19,7 @@ from .well import Well, WellError
 from . import utils
 from .utils import deprecated
 from .plot import plot_kdes_project
+from .plot import plot_map_project
 from .defaults import ALIAS  # For access by user.
 
 
@@ -379,28 +380,11 @@ class Project(object):
             matplotlib.figure.Figure, or matplotlib.axes.Axes if you passed in
                 an axes object as `ax`.
         """
-        xattr, yattr = fields
-        xys = np.array([[getattr(w.location, xattr), getattr(w.location, yattr)] for w in self])
-
-        if ax is None:
-            fig, ax = plt.subplots(figsize=(1+width, width/utils.aspect(xys)))
-            return_ax = True
-        else:
-            return_ax = False
-
-        ax.scatter(*xys.T, s=60)
-        ax.axis('equal')
-        ax.grid(which='both', axis='both', color='k', alpha=0.2)
-        
-        if label:
-            labels = [getattr(w.header, label) for w in self]
-            for xy, label in zip(xys, labels):
-                ax.annotate(label, xy+1000, color='gray')
-
-        if return_ax:
-            return ax
-        else:
-            return fig
+        return plot_map_project(project=self,
+                                fields=fields,
+                                ax=ax,
+                                label=label,
+                                width=width)
 
     def plot_kdes(self, mnemonic, alias=None, uwi_regex=None, return_fig=False):
         """

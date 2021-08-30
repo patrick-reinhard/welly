@@ -526,3 +526,46 @@ def plot_kdes_project(project, mnemonic, alias=None, uwi_regex=None, return_fig=
         else:
             return
 
+
+def plot_map_project(project, fields=('x', 'y'), ax=None, label=None, width=6):
+    """
+    Plot a map of the wells in the project.
+
+    Args:
+        project (welly.project.Project): Project object
+        fields (list): The two fields of the `location` object to use
+            as the x and y coordinates. Default: `('x', 'y')`
+        ax (matplotlib.axes.Axes): An axes object to plot into. Will be
+            returned. If you don't pass one, we'll create one and give
+            back the `fig` that it's in.
+        label (str): The field of the `Well.header` object to use as the label.
+            Default: `Well.header.name`.
+        width (float): The width, in inches, of the plot. Default: 6 in.
+
+    Returns:
+        matplotlib.figure.Figure, or matplotlib.axes.Axes if you passed in
+            an axes object as `ax`.
+    """
+    xattr, yattr = fields
+    xys = np.array([[getattr(w.location, xattr), getattr(w.location, yattr)] for w in project])
+
+    if ax is None:
+        fig, ax = plt.subplots(figsize=(1 + width, width / utils.aspect(xys)))
+        return_ax = True
+    else:
+        return_ax = False
+
+    ax.scatter(*xys.T, s=60)
+    ax.axis('equal')
+    ax.grid(which='both', axis='both', color='k', alpha=0.2)
+
+    if label:
+        labels = [getattr(w.header, label) for w in project]
+        for xy, label in zip(xys, labels):
+            ax.annotate(label, xy + 1000, color='gray')
+
+    if return_ax:
+        return ax
+    else:
+        return fig
+
