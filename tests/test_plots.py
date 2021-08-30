@@ -14,12 +14,29 @@ import pytest
 from welly import Well
 from welly import Project
 from welly import Synthetic
+from welly import Location
 
 params = {'tolerance': 20,
           'savefig_kwargs': {'dpi': 100},
           }
 
 FNAME = 'P-129_out.LAS'
+FNAME_PROJECT = 'P-129_out-with*.LAS'
+
+
+@pytest.mark.mpl_image_compare(**params)
+def test_project_plot_map():
+    """
+    Tests mpl image of curve.
+    """
+    project = Project.from_las(FNAME_PROJECT)
+
+    project[0].location = Location(params={'x': 1000, 'y': 1050})
+    project[1].location = Location(params={'x': 1010, 'y': 1060})
+
+    fig = project.plot_map()
+
+    return fig
 
 
 @pytest.mark.mpl_image_compare(**params)
@@ -31,6 +48,18 @@ def test_project_kdes_plot():
     project += project
 
     fig = project.plot_kdes(mnemonic='GR', return_fig=True)
+
+    return fig
+
+
+@pytest.mark.mpl_image_compare(**params)
+def test_curve_kde_plot():
+    """
+    Tests mpl image of curve.
+    """
+    well = Well.from_las(FNAME)
+
+    fig = well.data['GR'].plot_kde(return_fig=True)
 
     return fig
 
