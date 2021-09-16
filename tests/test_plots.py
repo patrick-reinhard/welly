@@ -20,8 +20,8 @@ params = {'tolerance': 20,
           'savefig_kwargs': {'dpi': 100},
           }
 
-FNAME = 'P-129_out.LAS'
-FNAME_PROJECT = 'P-129_out-with*.LAS'
+FNAME = 'tests/P-129_out.LAS'
+FNAME_PROJECT = 'tests/P-129_out-with*.LAS'
 
 
 @pytest.mark.mpl_image_compare(**params)
@@ -102,17 +102,17 @@ def test_synthetic_plot():
     return fig
 
 
-# @pytest.mark.mpl_image_compare(**params)
-# def test_well_synthetic_plot():
-#     """
-#     Tests mpl image of synthetic.
-#     """
-#     w = Well.from_las(FNAME)
-#     w.make_synthetic()
+@pytest.mark.mpl_image_compare(**params)
+def test_well_synthetic_plot():
+    """
+    Tests mpl image of synthetic.
+    """
+    w = Well.from_las(FNAME)
+    w.make_synthetic()
 
-#     fig = w.data['Synthetic'].plot(return_fig=True)
+    fig = w.data['Synthetic'].plot(return_fig=True)
 
-#     return fig
+    return fig
 
 
 @pytest.mark.mpl_image_compare(**params)
