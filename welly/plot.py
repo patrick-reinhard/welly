@@ -433,7 +433,7 @@ def plot_2d_curve(curve,
         return None
 
 
-def plot_curve(curve, ax=None, legend=None, return_fig=True, alias=None, **kwargs):
+def plot_curve(curve, ax=None, legend=None, return_fig=True, **kwargs):
     """
     Plot a curve.
 
