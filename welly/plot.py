@@ -79,6 +79,7 @@ def plot_map_project(project, fields=('x', 'y'), ax=None, label=None, width=6):
         matplotlib.figure.Figure, or matplotlib.axes.Axes if you passed in
             an axes object as `ax`.
     """
+    fig = None
     xattr, yattr = fields
     xys = np.array([[getattr(w.location, xattr), getattr(w.location, yattr)] for w in project])
 
