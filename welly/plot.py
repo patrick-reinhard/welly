@@ -352,6 +352,7 @@ def plot_2d_curve(curve,
         ax. If you passed in an ax, otherwise None.
     """
     # Set up the figure.
+    fig = None
     if ax is None:
         fig = plt.figure(figsize=(2, 10))
         ax = fig.add_subplot(111)
