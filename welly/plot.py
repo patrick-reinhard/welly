@@ -15,7 +15,11 @@ class WellPlotError(Exception):
     pass
 
 
-def plot_kdes_project(project, mnemonic, alias=None, uwi_regex=None, return_fig=True):
+def plot_kdes_project(project,
+                      mnemonic,
+                      alias=None,
+                      uwi_regex=None,
+                      return_fig=True):
     """
     Plot KDEs for all curves with the given name.
 
@@ -60,7 +64,11 @@ def plot_kdes_project(project, mnemonic, alias=None, uwi_regex=None, return_fig=
         return
 
 
-def plot_map_project(project, fields=('x', 'y'), ax=None, label=None, width=6):
+def plot_map_project(project,
+                     fields=('x', 'y'),
+                     ax=None,
+                     label=None,
+                     width=6):
     """
     Plot a map of the wells in the project.
 
@@ -104,7 +112,11 @@ def plot_map_project(project, fields=('x', 'y'), ax=None, label=None, width=6):
         return fig
 
 
-def plot_depth_track_well(well, ax, md, kind='MD', tick_spacing=100):
+def plot_depth_track_well(well,
+                          ax,
+                          md,
+                          kind='MD',
+                          tick_spacing=100):
     """
     Private function. Depth track plotting.
 
@@ -435,7 +447,11 @@ def plot_2d_curve(curve,
         return None
 
 
-def plot_curve(curve, ax=None, legend=None, return_fig=True, **kwargs):
+def plot_curve(curve,
+               ax=None,
+               legend=None,
+               return_fig=True,
+               **kwargs):
     """
     Plot a curve.
 
