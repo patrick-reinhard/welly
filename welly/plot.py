@@ -91,7 +91,7 @@ def plot_well(well,
         basis (ndarray): Optional. The basis of the plot, if you don't
             want welly to guess (probably the best idea).
         return_fig (bool): Whether to return the matplotlig figure. Default
-            False.
+            True.
         extents (str): What to use for the y limits:
             'td' — plot 0 to TD.
             'curves' — use a basis that accommodates all the curves.
@@ -258,7 +258,7 @@ def plot_2d_curve(curve,
         plot_curve (bool): Whether to plot the curve as well.
         ticks (tuple): The tick interval on the y-axis.
         return_fig (bool): whether to return the matplotlib figure.
-            Default False.
+            Default True.
 
     Returns:
         ax. If you passed in an ax, otherwise None.
@@ -347,7 +347,7 @@ def plot_2d_curve(curve,
         return None
 
 
-def plot_curve(curve, ax=None, legend=None, return_fig=False, alias=None, **kwargs):
+def plot_curve(curve, ax=None, legend=None, return_fig=True, alias=None, **kwargs):
     """
     Plot a curve.
 
@@ -356,7 +356,7 @@ def plot_curve(curve, ax=None, legend=None, return_fig=False, alias=None, **kwar
         ax (ax): A matplotlib axis.
         legend (striplog.legend): A legend. Optional. Should contain kwargs for ax.set().
         return_fig (bool): whether to return the matplotlib figure.
-            Default False.
+            Default True.
         kwargs: Arguments for ``ax.plot()``
 
     Returns:
@@ -440,7 +440,7 @@ def plot_kde_curve(curve,
         amax (float): Optional max value to permit.
         amin (float): Optional min value to permit.
         label (string): What to put on the y-axis. Defaults to curve name.
-        return_fig (bool): If you want to return the MPL figure object.
+        return_fig (bool): If you want to return the MPL figure object. Default True.
 
     Returns:
         None, axis, figure: depending on what you ask for.
@@ -492,7 +492,7 @@ def plot_kdes_project(project, mnemonic, alias=None, uwi_regex=None, return_fig=
             alias (dict): a welly alias dictionary.
             uwi_regex (str): a regex pattern. Only this part of the UWI will be displayed
                 on the plot of KDEs.
-            return_fig (bool): whether to return the matplotlib figure object.
+            return_fig (bool): whether to return the matplotlib figure object. Default True
 
         Returns:
             None or figure.
