@@ -384,8 +384,7 @@ def plot_2d_curve(curve,
     if plot_curve:
         paths = ax.fill_betweenx(curve.basis, curve, np.nanmin(curve),
                                  facecolor='none',
-                                 **kwargs,
-                                 )
+                                 **kwargs)
 
         # Make the 'fill' mask and clip the background image with it.
         patch = PathPatch(paths._paths[0], visible=False)
