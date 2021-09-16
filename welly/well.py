@@ -567,6 +567,7 @@ class Well(object):
     def _plot_depth_track(self, ax, md, kind='MD', tick_spacing=100):
         """
         Private function. Depth track plotting.
+        Wrapping plot function from plot.py.
 
         Args:
             ax (ax): A matplotlib axis.
@@ -592,7 +593,9 @@ class Well(object):
              extents='td',
              **kwargs):
         """
-        Plot multiple tracks.
+        Plot multiple tracks. Wrapping plot function from plot.py.
+        By default only show the plot, not return the figure object.
+
         Args:
             legend (striplog.legend): A legend instance.
             tracks (list): A list of strings and/or lists of strings. The

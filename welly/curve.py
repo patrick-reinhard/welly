@@ -274,7 +274,8 @@ class Curve(np.ndarray):
                 **kwargs,
                 ):
         """
-        Plot a 2D curve.
+        Plot a 2D curve. Wrapping plot function from plot.py.
+        By default only show the plot, not return the figure object.
 
         Args:
             ax (ax): A matplotlib axis.
@@ -301,7 +302,8 @@ class Curve(np.ndarray):
 
     def plot(self, ax=None, legend=None, return_fig=False, alias=None, **kwargs):
         """
-        Plot a curve.
+        Plot a curve. Wrapping plot function from plot.py.
+        By default only show the plot, not return the figure object.
 
         Args:
             ax (ax): A matplotlib axis.
@@ -743,6 +745,8 @@ class Curve(np.ndarray):
         """
         Plot a KDE for the curve. Very nice summary of KDEs:
         https://jakevdp.github.io/blog/2013/12/01/kernel-density-estimation/
+        Wrapping plot function from plot.py.
+        By default only show the plot, not return the figure object.
 
         Args:
             ax (axis): Optional matplotlib (MPL) axis to plot into. Returned.

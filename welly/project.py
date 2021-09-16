@@ -364,7 +364,7 @@ class Project(object):
 
     def plot_map(self, fields=('x', 'y'), ax=None, label=None, width=6):
         """
-        Plot a map of the wells in the project.
+        Plot a map of the wells in the project. Wrapping plot function from plot.py.
 
         Args:
             fields (list): The two fields of the `location` object to use
@@ -388,7 +388,8 @@ class Project(object):
 
     def plot_kdes(self, mnemonic, alias=None, uwi_regex=None, return_fig=False):
         """
-        Plot KDEs for all curves with the given name.
+        Plot KDEs for all curves with the given name. Wrapping plot function from plot.py.
+        By default only show the plot, not return the figure object.
 
         Args:
             menmonic (str): the name of the curve to look for.
