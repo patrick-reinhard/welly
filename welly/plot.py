@@ -332,8 +332,7 @@ def plot_2d_curve(curve,
                   plot_curve=False,
                   ticks=(1, 10),
                   return_fig=True,
-                  **kwargs,
-                  ):
+                  **kwargs):
     """
     Plot a 2D curve.
 
