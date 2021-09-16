@@ -21,7 +21,7 @@ def plot_kdes_project(project, mnemonic, alias=None, uwi_regex=None, return_fig=
 
     Args:
         project (welly.project.Project): Project object
-        menmonic (str): the name of the curve to look for.
+        menemonic (str): the name of the curve to look for.
         alias (dict): a welly alias dictionary.
         uwi_regex (str): a regex pattern. Only this part of the UWI will be displayed
             on the plot of KDEs.
