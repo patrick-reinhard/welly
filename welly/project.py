@@ -8,11 +8,9 @@ from __future__ import print_function
 
 import glob
 from collections import Counter
-import re
 import warnings
 
 import numpy as np
-import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 from .well import Well, WellError
@@ -20,7 +18,6 @@ from . import utils
 from .utils import deprecated
 from .plot import plot_kdes_project
 from .plot import plot_map_project
-from .defaults import ALIAS  # For access by user.
 
 
 class Project(object):
