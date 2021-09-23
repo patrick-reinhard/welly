@@ -2,9 +2,6 @@
 """
 Define a suite a tests for the canstrat functions.
 """
-import numpy as np
-
-from striplog import Striplog
 from welly import Well
 import welly.quality as q
 
