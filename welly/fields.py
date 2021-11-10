@@ -14,8 +14,10 @@ las_fields = {
         'field': ('well', 'FLD'),
         'license': ('well', 'LIC'),
         'uwi': ('well', 'UWI'),
-        'api': ('well', 'API'),
         'company': ('well', 'COMP'),
+        'start': ('well', 'STRT'),
+        'stop': ('well', 'STOP'),
+        'step': ('well', 'STEP'),
     },
     'location': {
         'location': ('well', 'LOC'),
@@ -43,9 +45,7 @@ las_fields = {
         'tdl': ('params', 'TDL'),
     },
     'data': {
-        'start': ('well', 'STRT'),
-        'stop': ('well', 'STOP'),
-        'step': ('well', 'STEP'),
+        'api': ('well', 'API'),
         'null': ('well', 'NULL'),
         'run': ('params', 'RUN'),
         'service_company': ('well', 'SRVC'),
@@ -61,17 +61,17 @@ dev_fields = {
 }
 
 header_sections = [
-    # LAS Versions: 1.2, 2, 3
+    # LAS Versions: 1.2, 2.0, 3.0
     'Well',
     'W',
     'Version',
     'V',
-    # LAS Versions: 1.2, 2
+    # LAS Versions: 1.2, 2.0
     'Curves',
     'C',
     'Parameter',
     'P',
-    # LAS Versions: 3
+    # LAS Versions: 3.0
     'Drilling_Parameter',
     'Drilling_Definition',
     'Core_Parameter',
@@ -88,31 +88,34 @@ header_sections = [
     'Test_Definition',
     'Tops_Parameter',
     'Tops_Definition',
-    'TOPS_Definition',
     'Perforation_Parameter',
+    'Perforations_Parameter',
     'Perforation_Definition',
     'Perforations_Definition',
 ]
 
 curve_sections = [
-    # LAS Versions: 1.2, 2
-    'Ascii',
+    # LAS Versions: 1.2, 2.0
     'ASCII',
     'A',
     'Curves',
+    'Curve',
     'C',
-    # LAS Versions: 3
+    # LAS Versions: 3.0
     'Drilling_Data',
+    'Core_Data',
     'Core_Data[1]',
     'Core_Data[2]',
     'Inclinometry_Data',
     'Test_Data',
     'Tops_Data',
-    'Perforation_Data'
+    'Perforation_Data',
+    'Log',
+    'Ascii'
 ]
 
 other_sections = [
-    # LAS Versions: 1.2, 2
+    # LAS Versions: 1.2, 2.0
     'Other',  # Str
     'O'
 ]

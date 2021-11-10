@@ -327,7 +327,7 @@ class Project(object):
                                 num_passes = sum(results)
                                 q = num_passes / num_tests
                     q_colour = q_colours.get(q, '#FFCC33')
-                    c_mean = '{:.2f}'.format(float(np.nanmean(c))) if np.any(c[~np.isnan(c)]) else np.nan
+                    c_mean = '{:.2f}'.format(float(np.nanmean(c.df.values))) if np.any(c.df.values[~np.isnan(c.df.values)]) else np.nan
                     curves.append(('#CCEECC', c.mnemonic, f"{num_passes}/{num_tests}", q_colour, c_mean, c.units))
                 q_total += num_passes
                 q_count += num_tests
@@ -389,6 +389,7 @@ class Project(object):
         Args:
             mnemonic (str): the name of the curve to look for.
             alias (dict): a welly alias dictionary.
+                e.g. {'density': ['DEN', 'DENS']}
             uwi_regex (str): a regex pattern. Only this part of the UWI will be displayed
                 on the plot of KDEs.
             return_fig (bool): whether to return the matplotlib figure object.
@@ -410,6 +411,7 @@ class Project(object):
         Args:
             mnemonic (str): the name of the curve to look for.
             alias (dict): a welly alias dictionary.
+                e.g. {'density': ['DEN', 'DENS']}
         
         Returns:
             project.
@@ -424,6 +426,7 @@ class Project(object):
         Args:
             menmonic (str): the name of the curve to look for.
             alias (dict): a welly alias dictionary.
+                e.g. {'density': ['DEN', 'DENS']}
         
         Returns:
             project.
@@ -437,6 +440,7 @@ class Project(object):
         Args:
             keys (list): the names of the data or curves to look for.
             alias (dict): a welly alias dictionary.
+                e.g. {'density': ['DEN', 'DENS']}
             func (str or function): a string from ['any', 'all', 'nany', 'nall']
                 or a runnable function returning a boolean. Return True for
                 wells you want to select. 'any' means you want wells which have
@@ -548,6 +552,7 @@ class Project(object):
             basis (array): A basis, if you want to enforce one, otherwise
                 you'll get the result of ``survey_basis()``.
             alias (dict): Alias dictionary.
+                e.g. {'density': ['DEN', 'DENS']}
             rename_aliased (bool): Whether to name the columns after the alias,
                 i.e. the alias dictionary key, or after the curve mnemonic.
                 Default is False, do not rename: use the mnemonic.

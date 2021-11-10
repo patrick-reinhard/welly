@@ -205,18 +205,20 @@ def list_and_add(a, b):
     return a + b
 
 
-def lasio_get(header,
-              section,
-              item,
-              attrib='value',
-              default=None,
-              remap=None,
-              funcs=None):
+def get_header_item(header,
+                    section,
+                    item,
+                    attrib='value',
+                    default=None,
+                    remap=None,
+                    funcs=None):
     """
-    Grabs, renames and transforms stuff from a header dataframe.
+    Grabs a header item from a header pd.DataFrame and optionally renames and
+    transforms it.
 
     Args:
-        header (pd.DataFrame): Header from LAS file parsed to tabular form. See :func: 'parse_from_las2()' for format.
+        header (pd.DataFrame): Header from LAS file parsed to tabular form.
+            See `las.from_las()` for more information.
         section (str): The LAS section to grab from, eg ``well``
         item (str): The item in the LAS section to grab from, eg ``name``
         attrib (str): The attribute of the item to grab, eg ``value``
@@ -226,7 +228,7 @@ def lasio_get(header,
             implementing a transform before loading. Can be a lambda.
 
     Returns:
-        The transformed item.
+        The requested, optionally transformed, item.
     """
     remap = remap or {}
     item_to_fetch = remap.get(item, item)
@@ -235,7 +237,8 @@ def lasio_get(header,
         return None
 
     try:
-        result = header[(header.mnemonic == item_to_fetch) & (header.section == las_objects[section])][attrib].values[0]
+        result = header[(header.mnemonic == item_to_fetch) &
+                        (header.section == las_objects[section])][attrib].values[0]
     except Exception:
         return default
 
@@ -681,3 +684,25 @@ def get_number_of_decimal_points(value):
         return -decimal.Decimal(str(value)).as_tuple().exponent
     else:
         return None
+
+
+def get_step_from_array(arr):
+    """
+    Gets the 'step' or increment of the array. Requires numeric values in array
+
+    Args:
+        arr (np.array): The array
+
+    Returns:
+        Float. If the index is numeric and equally sampled
+        0. If the index is numeric and not equally sampled
+        None. If the index is not numeric
+    """
+    # compute differences between subsequent elements in index array
+    dif = np.diff(arr)
+    if np.allclose(dif - np.mean(dif), np.zeros_like(dif)):
+        # index evenly sampled
+        return np.nanmedian(dif)
+    else:
+        # index unevenly sampled so cannot derive `step`
+        return 0

@@ -25,7 +25,7 @@ def plot_kdes_project(project,
     Args:
         project (welly.project.Project): Project object
         menemonic (str): the name of the curve to look for.
-        alias (dict): a welly alias dictionary.
+        alias (dict): a welly alias dictionary. e.g. {'density': ['DEN', 'DENS']}
         uwi_regex (str): a regex pattern. Only this part of the UWI will be displayed
             on the plot of KDEs.
         return_fig (bool): whether to return the matplotlib figure object. Default True
@@ -35,7 +35,13 @@ def plot_kdes_project(project,
     wells = project.find_wells_with_curve(mnemonic, alias=alias)
     fig, axs = plt.subplots(len(project), 1, figsize=(10, 1.5 * len(project)))
 
+    # get all curves
     curves = [w.get_curve(mnemonic, alias=alias) for w in wells]
+
+    # get curve data as np arrays
+    curves = [curve.df.values for curve in curves]
+
+    # remove nans
     all_data = np.hstack(curves)
     all_data = all_data[~np.isnan(all_data)]
 
@@ -183,6 +189,7 @@ def plot_well(well,
             strings. The names to give the tracks, if you don't want welly
             to guess.
         alias (dict): a dictionary mapping mnemonics to lists of mnemonics.
+                e.g. {'density': ['DEN', 'DENS']}
         basis (ndarray): Optional. The basis of the plot, if you don't
             want welly to guess (probably the best idea).
         return_fig (bool): Whether to return the matplotlig figure. Default
@@ -365,20 +372,22 @@ def plot_2d_curve(curve,
 
     # Set up the data.
     cmap = cmap or 'viridis'
-    default = int(curve.shape[0] / aspect)
-    if curve.ndim == 1:
-        a = np.expand_dims(curve, axis=1)
+
+    curve_data = curve.as_numpy()
+    default = int(curve_data.shape[0] / aspect)
+    if curve_data.ndim == 1:
+        a = np.expand_dims(curve_data, axis=1)
         a = np.repeat(a, width or default, axis=1)
-    elif curve.ndim == 2:
-        a = curve[:, :width] if width < curve.shape[1] else curve
-    elif curve.ndim == 3:
-        if 2 < curve.shape[-1] < 5:
+    elif curve_data.ndim == 2:
+        a = curve_data[:, :width] if width < curve_data.shape[1] else curve_data
+    elif curve_data.ndim == 3:
+        if 2 < curve_data.shape[-1] < 5:
             # Interpret as RGB or RGBA.
-            a = utils.normalize(np.copy(curve))
+            a = utils.normalize(np.copy(curve_data))
             cmap = None  # Actually doesn't matter.
         else:
             # Take first slice.
-            a = curve[:, :width, 0] if width < curve.shape[1] else curve[..., 0]
+            a = curve_data[:, :width, 0] if width < curve_data.shape[1] else curve_data[..., 0]
     else:
         raise NotImplementedError("Can only handle up to 3 dimensions.")
 
@@ -387,7 +396,7 @@ def plot_2d_curve(curve,
     im = ax.imshow(a, cmap=cmap, extent=extent, aspect='auto')
 
     if plot_curve:
-        paths = ax.fill_betweenx(curve.basis, curve, np.nanmin(curve),
+        paths = ax.fill_betweenx(curve.basis, curve_data, np.nanmin(curve_data),
                                  facecolor='none',
                                  **kwargs)
 
@@ -475,7 +484,7 @@ def plot_curve(curve,
         kwargs['lw'] = getattr(d, 'lineweight', None) or getattr(d, 'lw', 1)
         kwargs['ls'] = getattr(d, 'linestyle', None) or getattr(d, 'ls', '-')
 
-    ax.plot(curve, curve.basis, **kwargs)
+    ax.plot(curve.df, curve.basis, **kwargs)
 
     if d is not None:
         # Attempt to get axis parameters from decor.
@@ -495,7 +504,7 @@ def plot_curve(curve,
 
         ax.set(**axkwargs)
 
-    ax.set_title(curve.mnemonic)  # no longer needed
+    ax.set_title(curve.df.columns[0])  # no longer needed
     ax.set_xlabel(curve.units)
 
     if False:  # labeltop of axes?
@@ -546,7 +555,7 @@ def plot_kde_curve(curve,
     else:
         return_ax = True
 
-    a = curve[~np.isnan(curve)]
+    a = curve.df.dropna().to_numpy()
 
     # Find values for common axis to exclude outliers.
     if amax is None:
@@ -564,7 +573,7 @@ def plot_kde_curve(curve,
     extent = [amin, amax, 0, 1]
     ax.imshow(img, aspect='auto', cmap='viridis', extent=extent)
     ax.set_yticklabels([])
-    ax.set_ylabel(label or curve.mnemonic)
+    ax.set_ylabel(label or curve.df.columns[0])
 
     if return_ax:
         return ax
